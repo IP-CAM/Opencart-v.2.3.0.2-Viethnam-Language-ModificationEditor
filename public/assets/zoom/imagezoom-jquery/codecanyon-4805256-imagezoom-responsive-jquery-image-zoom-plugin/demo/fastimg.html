@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>FastImg</title>
+<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="js/jquery.imagezoom.min.js"></script>
+<style type="text/css">
+	html,body
+	{
+		font-family:Verdana, Geneva, sans-serif;
+		font-size:12px;
+	}
+	#path
+	{
+		background: none repeat scroll 0 0 #FAFAFA;
+    	border: 2px solid #0259C4;
+    	border-radius: 3px 3px 3px 3px;
+    	padding: 5px;
+    	width: 36em;
+	}
+	#path:focus { background:#FFFFF7; outline:0; }
+	#load
+	{
+		background: none repeat scroll 0 0 #0259C4;
+		border: 2px solid #0259C4;
+		border-radius: 3px 3px 3px 3px;
+		color: #FFFFFF;
+		cursor: pointer;
+		padding: 5px 10px;
+		text-shadow:1px 1px 1px raga(0,0,0,.3);
+	}
+	.action{
+		margin-top:20px;
+	}
+</style>
+<script type="text/javascript">
+
+	var Timer = function (){
+		this.startTime = (new Date()).getTime();
+	};
+	Timer.prototype.stop = function(){
+		return (new Date()).getTime() - this.startTime;
+	};
+	
+
+	
+	$(function(){
+		$('#path').val('http://i1330.photobucket.com/albums/w564/junjun_0228/Yuenan02_zps8862de9f.jpg?'+new Date().getTime());
+		$('#load').bind('click',function(){
+			var time = new Timer();
+			$('#imgreadystatus,#imgonloadstatus').text('Loading...');
+			var imgUrl = $('#path').val();
+			$('#imgWrap').empty();
+			
+			fastImg(imgUrl, function () {
+				$('#imgreadystatus').html(' Use Time: '+ (time.stop() / 1000)+' s. Width: ' +this.width+'; Height: '+this.height );
+				$("#imgWrap").html('<img src="'+imgUrl+'"/>');
+			}, function () {
+				$('#imgonloadstatus').html(' Use Time: '+ (time.stop() / 1000)+' s. Width: ' +this.width+'; Height: '+this.height );
+			}, function () {
+				$('#imgonloadstatus').html(' User Time: ' + (time.stop() / 1000) +' s. ERROR:Could not load the image！');
+			});
+		});	 
+		
+		$('#clear').click(function(){
+			var value = $('#path').val();
+			$('#path').val((value.split('?')[1] ? value.split('?')[0] : value) + '?' + new Date().getTime());
+			$('#imgreadystatus,#imgonloadstatus,#imgWrap').html('');
+		});
+	});
+</script>
+</head>
+<body>
+	<div class="action">
+		<input type="text" id="path"  value="" />
+		<input type="button" id="load" value="Click here to load" /> <a id="clear" href="#"> Clear Cache </a> Note: Browser with cache image so click 'Clear Cache' will make it more accurate.
+	</div>
+	<div class="status">
+		<p><strong>Get image size by imgready function:</strong><span id="imgreadystatus"></span></p>
+		<p><strong>Get image size by image's onload event:</strong><span id="imgonloadstatus"></span></p>
+	</div>
+	<div id="imgWrap">
+	</div>
+</body>
+</html>
